@@ -43,3 +43,11 @@ function amit_services_deactivate() {
     flush_rewrite_rules();      // remove the Service URLs from the list
 }
 register_deactivation_hook( __FILE__, 'amit_services_deactivate' );
+
+function amit_services_add_note( $content ) {
+    if ( is_singular( 'service' ) ) {
+        $content .= '<p>Call us for a quote.</p>';
+    }
+    return $content;
+}
+add_filter( 'the_content', 'amit_services_add_note', 20, 1 );
