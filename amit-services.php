@@ -122,3 +122,36 @@ function amit_api_posts_shortcode() {
     return $html;
 }
 add_shortcode( 'amit_api_posts', 'amit_api_posts_shortcode' );
+
+
+add_action( 'rest_api_init', 'amit_register_routes' );
+
+function amit_register_routes() {
+    register_rest_route( 'amit/v1', '/hello', array(
+        'methods'             => 'GET',
+        'callback'            => 'amit_hello_callback',
+        'permission_callback' => '__return_true',
+    ) );
+}
+
+function amit_hello_callback() {
+    $query = new WP_Query( array(
+        'post_type'      => 'service',
+        'posts_per_page' => -1,
+    ) );
+
+    $data = array();
+
+    while ( $query->have_posts() ) {
+        $query->the_post();
+        $data[] = array(
+            'id'    => get_the_ID(),
+            'title' => get_the_title(),
+            'link'  => get_permalink(),
+        );
+    }
+
+    wp_reset_postdata();
+
+    return $data;
+}
