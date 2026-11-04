@@ -91,3 +91,29 @@ function amit_services_admin_page() {
     echo '<p>Total services: ' . esc_html( $count ) . '</p>';
     echo '</div>';
 }
+
+
+function amit_api_posts_shortcode() {
+    $response = wp_remote_get( 'https://jsonplaceholder.typicode.com/posts?_limit=3' );
+
+    if ( is_wp_error( $response ) ) {
+        return '<p>Error fetching API data.</p>';
+    }
+
+    if ( wp_remote_retrieve_response_code( $response ) !== 200 ) {
+    return 'API returned an error.';
+}
+
+    $body = wp_remote_retrieve_body( $response );
+    $posts = json_decode( $body, true );
+
+    $html = '<ul>';
+
+    foreach ( $posts as $post ) {
+        $html .= '<li>' . esc_html( $post['title'] ) . '</li>';
+    }
+    $html .= '</ul>';
+
+    return $html;
+}
+add_shortcode( 'amit_api_posts', 'amit_api_posts_shortcode' );
