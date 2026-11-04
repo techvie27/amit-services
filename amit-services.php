@@ -92,23 +92,28 @@ function amit_services_admin_page() {
     echo '</div>';
 }
 
-
 function amit_api_posts_shortcode() {
-    $response = wp_remote_get( 'https://jsonplaceholder.typicode.com/posts?_limit=3' );
+    $posts = get_transient( 'amit_api_posts' );
 
-    if ( is_wp_error( $response ) ) {
-        return '<p>Error fetching API data.</p>';
+    if ( false === $posts ) {
+        $response = wp_remote_get( 'https://jsonplaceholder.typicode.com/posts?_limit=3' );
+
+        if ( is_wp_error( $response ) ) {
+            return '<p>Error fetching API data.</p>';
+        }
+
+        if ( wp_remote_retrieve_response_code( $response ) !== 200 ) {
+            return '<p>API returned an error.</p>';
+        }
+
+        $body  = wp_remote_retrieve_body( $response );
+        $posts = json_decode( $body, true );
+
+        // Save only after both checks passed and we have real data
+        set_transient( 'amit_api_posts', $posts, HOUR_IN_SECONDS );
     }
-
-    if ( wp_remote_retrieve_response_code( $response ) !== 200 ) {
-    return 'API returned an error.';
-}
-
-    $body = wp_remote_retrieve_body( $response );
-    $posts = json_decode( $body, true );
-
+  
     $html = '<ul>';
-
     foreach ( $posts as $post ) {
         $html .= '<li>' . esc_html( $post['title'] ) . '</li>';
     }
