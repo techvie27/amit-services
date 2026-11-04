@@ -127,18 +127,38 @@ add_shortcode( 'amit_api_posts', 'amit_api_posts_shortcode' );
 add_action( 'rest_api_init', 'amit_register_routes' );
 
 function amit_register_routes() {
-    register_rest_route( 'amit/v1', '/hello', array(
+    register_rest_route( 'amit/v1', '/services', array(
         'methods'             => 'GET',
-        'callback'            => 'amit_hello_callback',
+        'callback'            => 'amit_services_callback',
         'permission_callback' => '__return_true',
+        'args' => array(
+    'type' => array(
+        'required'          => false,
+        'sanitize_callback' => 'sanitize_text_field',
+    ),
+),
     ) );
 }
 
-function amit_hello_callback() {
-    $query = new WP_Query( array(
-        'post_type'      => 'service',
-        'posts_per_page' => -1,
-    ) );
+function amit_services_callback( $request ) {
+    $type = $request->get_param( 'type' );
+
+    $args = array(
+    'post_type'      => 'service',
+    'posts_per_page' => -1,
+);
+
+    if ( ! empty( $type ) ) {
+        $args['tax_query'] = array(
+            array(
+                'taxonomy' => 'service_type',   
+                'field'    => 'slug',
+                'terms'    => sanitize_text_field( $type ),   
+            ),
+        );
+    }
+
+    $query = new WP_Query( $args );
 
     $data = array();
 
