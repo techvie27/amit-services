@@ -19,6 +19,7 @@ function amit_services_register() {
         'public'      => true,
         'has_archive' => true,
         'supports'    => array( 'title', 'editor', 'thumbnail' ),
+        'show_in_rest' => true,
         'menu_icon'   => 'dashicons-hammer',
     ) );
 
