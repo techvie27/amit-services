@@ -8,4 +8,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check PHP syntax
-        run: php -l ____
+        run: php -l amit-services.php
