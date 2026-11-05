@@ -22,3 +22,22 @@ jobs:
 
       - name: Check coding standard
         run: vendor/bin/phpcs --standard=WordPress -n amit-services.php
+
+  deploy:
+    needs: check
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build plugin package
+        run: |
+          mkdir amit-services
+          cp amit-services.php amit-services/
+          zip -r amit-services.zip amit-services
+
+      - name: Save package
+        uses: actions/upload-artifact@v4
+        with:
+          name: amit-services-plugin
+          path: amit-services.zip
