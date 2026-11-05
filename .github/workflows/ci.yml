@@ -7,5 +7,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "Hello from the robot"
-      - run: php -v
+      - name: Check PHP syntax
+        run: php -l ____
