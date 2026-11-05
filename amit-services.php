@@ -138,6 +138,20 @@ function amit_register_routes() {
     ),
 ),
     ) );
+
+    register_rest_route( 'amit/v1', '/services', array(
+    'methods'             => 'POST',                
+    'callback'            => 'amit_create_service',
+    'permission_callback' => function () {
+        return current_user_can( 'edit_posts' );  
+    },
+    'args'                => array(
+        'title' => array(
+            'required'          => true,
+            'sanitize_callback' => 'sanitize_text_field',
+        ),
+    ),
+) );
 }
 
 function amit_services_callback( $request ) {
@@ -174,4 +188,16 @@ function amit_services_callback( $request ) {
     wp_reset_postdata();
 
     return $data;
+}
+
+function amit_create_service( $request ) {
+    $title = $request->get_param( 'title' );
+
+    $id = wp_insert_post( array(
+        'post_type'   => 'service',
+        'post_title'  => $title,
+        'post_status' => 'draft',
+    ) );
+
+    return array( 'id' => $id, 'title' => $title );
 }
