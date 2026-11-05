@@ -7,5 +7,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+
+      - name: Install packages
+        run: composer install --no-progress
+
       - name: Check PHP syntax
         run: php -l amit-services.php
+
+      - name: Check coding standard
+        run: vendor/bin/phpcs --standard=WordPress -n amit-services.php
